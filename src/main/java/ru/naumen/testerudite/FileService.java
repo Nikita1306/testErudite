@@ -44,12 +44,18 @@ public class FileService {
         }
         else {
             RestTemplate rest = new RestTemplate();
-            // В случае, если сервер agify не отвечает, возвращаем случайное положительное число
+            /* В случае, если сервер agify не отвечает, возвращаем случайное положительное число
+            * При отсутствии имени в файле, это имя и случайный возраст будут добавлены в HashMap
+            */
             try {
                 JSONObject random = rest.getForObject("https://api.agify.io/?name=" + randomNames[new Random().nextInt(randomNames.length)], JSONObject.class);
-                return Integer.valueOf(random.get("age").toString());
+                Integer age = Integer.valueOf(random.get("age").toString());
+                namesAndAge.put(name, age);
+                return age;
             } catch (RestClientException exception) {
-                return ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+                Integer age = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+                namesAndAge.put(name, age);
+                return age;
 
             }
         }
